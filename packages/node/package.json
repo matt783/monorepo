@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@counterfactual/apps": "0.0.1",
-    "@firebase/app-types": "^0.3.3",
+    "@firebase/app-types": "^0.3.4",
     "@types/node": "^11.9.0",
     "dotenv-extended": "^2.3.0",
     "firebase-server": "^1.0.1",
