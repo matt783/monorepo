@@ -2,6 +2,8 @@ pragma solidity 0.5.3;
 
 
 contract Echo {
+  address masterCopy;
+
   function helloWorld() external pure returns (string memory)  {
     return "hello world";
   }
