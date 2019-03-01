@@ -1,6 +1,6 @@
 {
   "name": "@counterfactual/node",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "iife": "dist/index.iife.js",
   "types": "dist/src/index.d.ts",
@@ -13,7 +13,7 @@
     "lint": "tslint -c tslint.json -p ."
   },
   "devDependencies": {
-    "@counterfactual/apps": "0.0.1",
+    "@counterfactual/apps": "^0.1.0",
     "@firebase/app-types": "^0.3.3",
     "@types/node": "^11.9.0",
     "dotenv-extended": "^2.3.0",
@@ -32,16 +32,16 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "@counterfactual/cf.js": "0.0.5",
-    "@counterfactual/contracts": "0.0.3",
-    "@counterfactual/machine": "0.0.2",
-    "@counterfactual/types": "0.0.5",
+    "@counterfactual/cf.js": "^0.1.0",
+    "@counterfactual/contracts": "^0.1.0",
+    "@counterfactual/machine": "^0.1.0",
+    "@counterfactual/types": "^0.1.0",
+    "@firebase/app-types": "0.*",
     "@firebase/util": "0.*",
-    "@firebase/app-types" : "0.*",
     "ethers": "4.0.26",
     "eventemitter3": "^3.1.0",
-    "p-queue": "^3.1.0",
     "firebase": "5.8.4",
+    "p-queue": "^3.1.0",
     "uuid": "^3.3.2"
   }
 }
