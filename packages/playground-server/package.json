@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@counterfactual/node": "^0.1.0",
-    "@counterfactual/types": "^0.1.0",
+    "@counterfactual/types": "0.1.1",
     "@counterfactual/typescript-typings": "^0.1.0",
     "@ebryn/jsonapi-ts": "^0.0.4",
     "@koa/cors": "^2.2.3",
