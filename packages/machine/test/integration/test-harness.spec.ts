@@ -1,37 +1,26 @@
 import AppRegistry from "@counterfactual/contracts/build/AppRegistry.json";
 import ETHBucket from "@counterfactual/contracts/build/ETHBucket.json";
-import StateChannelTransaction from "@counterfactual/contracts/build/StateChannelTransaction.json";
 import NonceRegistry from "@counterfactual/contracts/build/NonceRegistry.json";
-
-import { AssetType, NetworkContext } from "@counterfactual/types";
-import { Contract, Wallet, utils } from "ethers";
-import { AddressZero, WeiPerEther } from "ethers/constants";
-
-import { xkeysToSortedKthSigningKeys, InstructionExecutor, Opcode } from "../../src";
-import { SetStateCommitment } from "../../src/ethereum";
-import { StateChannel } from "../../src/models";
+import StateChannelTransaction from "@counterfactual/contracts/build/StateChannelTransaction.json";
+import { NetworkContext } from "@counterfactual/types";
+import { AddressZero } from "ethers/constants";
+import { JsonRpcProvider } from "ethers/providers";
 
 import { toBeEq } from "./bignumber-jest-matcher";
 import { connectToGanache } from "./connect-ganache";
-import { getRandomHDNodes } from "./random-signing-keys";
+import { MessageRouter, MiniNode } from "./mininode";
 import { WaffleLegacyOutput } from "./waffle-type";
-import { JsonRpcProvider } from "ethers/providers";
-import { SigningKey, bigNumberify } from "ethers/utils";
-import { HDNode } from "ethers/utils/hdnode";
-import { MiniNode, MessageRouter } from "@counterfactual/machine/test/integration/mininode";
 
 const JEST_TEST_WAIT_TIME = 30000;
 
 let networkId: number;
-let wallet: Wallet;
 let network: NetworkContext;
-let appRegistry: Contract;
 let provider: JsonRpcProvider;
 
 expect.extend({ toBeEq });
 
 beforeAll(async () => {
-  [provider, wallet, networkId] = await connectToGanache();
+  [provider, {}, networkId] = await connectToGanache();
 
   const relevantArtifacts = [
     { contractName: "AppRegistry", ...AppRegistry },
@@ -53,12 +42,10 @@ beforeAll(async () => {
   } as NetworkContext;
 });
 
-
 describe("test", async () => {
   jest.setTimeout(JEST_TEST_WAIT_TIME);
 
   it("test", async () => {
-
     const mininodeA = new MiniNode(network, provider);
     const mininodeB = new MiniNode(network, provider);
 
@@ -99,7 +86,5 @@ describe("test", async () => {
     //     defaultTimeout: 40
     //   }
     // );
-
   });
-
 });
