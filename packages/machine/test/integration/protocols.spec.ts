@@ -1,14 +1,18 @@
 import AppRegistry from "@counterfactual/contracts/build/AppRegistry.json";
 import ETHBucket from "@counterfactual/contracts/build/ETHBucket.json";
+import MultiSend from "@counterfactual/contracts/build/MultiSend.json";
 import NonceRegistry from "@counterfactual/contracts/build/NonceRegistry.json";
 import StateChannelTransaction from "@counterfactual/contracts/build/StateChannelTransaction.json";
-import { NetworkContext } from "@counterfactual/types";
+import { xkeyKthAddress } from "@counterfactual/machine/src";
+import { sortAddresses } from "@counterfactual/machine/src/xkeys";
+import { AssetType, NetworkContext } from "@counterfactual/types";
 import { AddressZero } from "ethers/constants";
 import { JsonRpcProvider } from "ethers/providers";
+import { bigNumberify } from "ethers/utils";
 
 import { toBeEq } from "./bignumber-jest-matcher";
 import { connectToGanache } from "./connect-ganache";
-import { MessageRouter, MiniNode } from "./mininode";
+import { MessageRouter, MiniNode } from "./test-harness";
 import { WaffleLegacyOutput } from "./waffle-type";
 
 const JEST_TEST_WAIT_TIME = 30000;
@@ -26,7 +30,8 @@ beforeAll(async () => {
     { contractName: "AppRegistry", ...AppRegistry },
     { contractName: "ETHBucket", ...ETHBucket },
     { contractName: "StateChannelTransaction", ...StateChannelTransaction },
-    { contractName: "NonceRegistry", ...NonceRegistry }
+    { contractName: "NonceRegistry", ...NonceRegistry },
+    { contractName: "MultiSend", ...MultiSend }
     // todo: add more
   ];
 
@@ -64,27 +69,29 @@ describe("test", async () => {
 
     mr.assertNoPending();
 
-    // await mininodeA.ie.runInstallProtocol(
-    //   mininodeA.scm, {
-    //     initiatingXpub: mininodeA.xpub,
-    //     respondingXpub: mininodeB.xpub,
-    //     multisigAddress: AddressZero,
-    //     aliceBalanceDecrement: bigNumberify(0),
-    //     bobBalanceDecrement: bigNumberify(0),
-    //     signingKeys: [],
-    //     initialState: {},
-    //     terms: {
-    //       assetType: AssetType.ETH,
-    //       limit: bigNumberify(100),
-    //       token: AddressZero
-    //     },
-    //     appInterface: {
-    //       addr: AddressZero,
-    //       stateEncoding: "",
-    //       actionEncoding: undefined
-    //     },
-    //     defaultTimeout: 40
-    //   }
-    // );
+    const signingKeys = sortAddresses([
+      xkeyKthAddress(mininodeA.xpub, 1),
+      xkeyKthAddress(mininodeB.xpub, 1)
+    ]);
+    await mininodeA.ie.runInstallProtocol(mininodeA.scm, {
+      signingKeys,
+      initiatingXpub: mininodeA.xpub,
+      respondingXpub: mininodeB.xpub,
+      multisigAddress: AddressZero,
+      aliceBalanceDecrement: bigNumberify(0),
+      bobBalanceDecrement: bigNumberify(0),
+      initialState: {},
+      terms: {
+        assetType: AssetType.ETH,
+        limit: bigNumberify(100),
+        token: AddressZero
+      },
+      appInterface: {
+        addr: AddressZero,
+        stateEncoding: "",
+        actionEncoding: undefined
+      },
+      defaultTimeout: 40
+    });
   });
 });
