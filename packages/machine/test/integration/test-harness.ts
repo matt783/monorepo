@@ -3,11 +3,11 @@ import {
   Opcode,
   StateChannel
 } from "@counterfactual/machine/src";
+import { EthereumCommitment } from "@counterfactual/machine/src/ethereum/types";
 import { NetworkContext } from "@counterfactual/types";
 import { JsonRpcProvider } from "ethers/providers";
 import { randomBytes, SigningKey } from "ethers/utils";
 import { entropyToMnemonic, fromMnemonic, HDNode } from "ethers/utils/hdnode";
-import { EthereumCommitment } from "@counterfactual/machine/src/ethereum/types";
 
 const randomHDNode = () => fromMnemonic(entropyToMnemonic(randomBytes(20)));
 
