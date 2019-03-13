@@ -7,12 +7,13 @@ import { NetworkContext } from "@counterfactual/types";
 import { JsonRpcProvider } from "ethers/providers";
 import { randomBytes, SigningKey } from "ethers/utils";
 import { entropyToMnemonic, fromMnemonic, HDNode } from "ethers/utils/hdnode";
+import { EthereumCommitment } from "@counterfactual/machine/src/ethereum/types";
 
 const randomHDNode = () => fromMnemonic(entropyToMnemonic(randomBytes(20)));
 
 /// Returns a function that can be registered with IO_SEND{_AND_WAIT}
 const makeSigner = (hdNode: HDNode, asIntermediary: boolean) => {
-  return async (args: any[]) => {
+  return async (args: [EthereumCommitment] | [EthereumCommitment, number]) => {
     if (args.length !== 1 && args.length !== 2) {
       throw Error("OP_SIGN middleware received wrong number of arguments.");
     }
@@ -93,11 +94,11 @@ export class MessageRouter {
     for (const node of nodes) {
       this.nodesMap.set(node.xpub, node);
 
-      node.ie.register(Opcode.IO_SEND, (args: any[]) => {
+      node.ie.register(Opcode.IO_SEND, (args: [any]) => {
         const [message] = args;
         this.routeMessage(message);
       });
-      node.ie.register(Opcode.IO_SEND_AND_WAIT, async (args: any[]) => {
+      node.ie.register(Opcode.IO_SEND_AND_WAIT, async (args: [any]) => {
         const [message] = args;
         message.fromXpub = node.xpub;
 
