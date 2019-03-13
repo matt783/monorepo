@@ -6,10 +6,10 @@ import {
 import { EthereumCommitment } from "@counterfactual/machine/src/ethereum/types";
 import { NetworkContext } from "@counterfactual/types";
 import { JsonRpcProvider } from "ethers/providers";
-import { randomBytes, SigningKey } from "ethers/utils";
-import { entropyToMnemonic, fromMnemonic, HDNode } from "ethers/utils/hdnode";
+import { SigningKey } from "ethers/utils";
+import { HDNode } from "ethers/utils/hdnode";
 
-const randomHDNode = () => fromMnemonic(entropyToMnemonic(randomBytes(20)));
+import { getRandomHDNodes } from "./random-signing-keys";
 
 /// Returns a function that can be registered with IO_SEND{_AND_WAIT}
 const makeSigner = (hdNode: HDNode, asIntermediary: boolean) => {
@@ -39,7 +39,7 @@ export class MiniNode {
     readonly networkContext: NetworkContext,
     readonly provider: JsonRpcProvider
   ) {
-    this.hdNode = randomHDNode();
+    [this.hdNode] = getRandomHDNodes(1);
     this.xpub = this.hdNode.neuter().extendedKey;
     this.scm = new Map<string, StateChannel>();
     this.ie = new InstructionExecutor(networkContext, provider);
