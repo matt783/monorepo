@@ -12,7 +12,8 @@ import { bigNumberify } from "ethers/utils";
 
 import { toBeEq } from "./bignumber-jest-matcher";
 import { connectToGanache } from "./connect-ganache";
-import { MessageRouter, MiniNode } from "./test-harness";
+import { MiniNode } from "./mininode";
+import { MessageRouter } from "./message-router";
 import { WaffleLegacyOutput } from "./waffle-type";
 
 const JEST_TEST_WAIT_TIME = 30000;
