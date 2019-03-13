@@ -48,14 +48,15 @@ beforeAll(async () => {
   } as NetworkContext;
 });
 
-describe("Two mininodes", async () => {
+describe("Three mininodes", async () => {
   jest.setTimeout(JEST_TEST_WAIT_TIME);
 
-  it("Can run setup and install", async () => {
+  it("Can run all the protocols", async () => {
     const mininodeA = new MiniNode(network, provider);
     const mininodeB = new MiniNode(network, provider);
+    const mininodeC = new MiniNode(network, provider);
 
-    const mr = new MessageRouter([mininodeA, mininodeB]);
+    const mr = new MessageRouter([mininodeA, mininodeB, mininodeC]);
 
     mininodeA.scm = await mininodeA.ie.runSetupProtocol({
       initiatingXpub: mininodeA.xpub,
@@ -63,7 +64,7 @@ describe("Two mininodes", async () => {
       multisigAddress: AddressZero
     });
 
-    // todo: if nodeB is still busy doing stuff, we should wait for it
+    // todo: if nodeB/nodeC is still busy doing stuff, we should wait for it
 
     mr.assertNoPending();
 
@@ -91,5 +92,30 @@ describe("Two mininodes", async () => {
       },
       defaultTimeout: 40
     });
+
+    const appInstances = mininodeA.scm.get(AddressZero)!.appInstances;
+    const [key] = [...appInstances.keys()].filter((key) => {
+      return key !== mininodeA.scm.get(AddressZero)!.toJson().freeBalanceAppIndexes[0][1]
+    });
+
+    console.log(mininodeA.scm);
+    console.log(key);
+
+    // todo: will fail because appdefinition contract not deployed
+
+    // await mininodeA.ie.runUninstallProtocol(mininodeA.scm, {
+    //   appIdentityHash: key,
+    //   initiatingXpub: mininodeA.xpub,
+    //   respondingXpub: mininodeB.xpub,
+    //   multisigAddress: AddressZero
+    // });
+
+    // mininodeB.scm = await mininodeB.ie.runSetupProtocol({
+    //   initiatingXpub: mininodeB.xpub,
+    //   respondingXpub: mininodeC.xpub,
+    //   multisigAddress: AddressZero
+    // });
+
+
   });
 });
