@@ -47,10 +47,10 @@ beforeAll(async () => {
   } as NetworkContext;
 });
 
-describe("test", async () => {
+describe("Two mininodes", async () => {
   jest.setTimeout(JEST_TEST_WAIT_TIME);
 
-  it("test", async () => {
+  it("Can run setup and install", async () => {
     const mininodeA = new MiniNode(network, provider);
     const mininodeB = new MiniNode(network, provider);
 
@@ -61,9 +61,6 @@ describe("test", async () => {
       respondingXpub: mininodeB.xpub,
       multisigAddress: AddressZero
     });
-
-    console.log(mininodeA.scm);
-    console.log(mininodeB.scm);
 
     // todo: if nodeB is still busy doing stuff, we should wait for it
 
