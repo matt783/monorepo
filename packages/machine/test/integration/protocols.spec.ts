@@ -129,15 +129,15 @@ describe("Three mininodes", async () => {
 
     mr.assertNoPending();
 
-    const AddressOne = "0x0000000000000000000000000000000000000001";
+    const addressOne = "0x0000000000000000000000000000000000000001";
 
     mininodeB.scm.set(
-      AddressOne,
+      addressOne,
       (await mininodeB.ie.runSetupProtocol({
         initiatingXpub: mininodeB.xpub,
         respondingXpub: mininodeC.xpub,
         multisigAddress: "0x0000000000000000000000000000000000000001"
-      })).get(AddressOne)!
+      })).get(addressOne)!
     );
 
     mr.assertNoPending();
@@ -155,7 +155,7 @@ describe("Three mininodes", async () => {
         addr: appDefinition.address,
         stateEncoding:
           "tuple(address player1, address player2, uint256 counter)",
-        actionEncoding: "tuple(uint256)"
+        actionEncoding: "tuple(uint256 increment)"
       },
       initialState: {
         player1: AddressZero,
@@ -164,6 +164,52 @@ describe("Three mininodes", async () => {
       },
       initiatingBalanceDecrement: bigNumberify(0),
       respondingBalanceDecrement: bigNumberify(0)
+    });
+
+    expect(mininodeA.scm.size).toBe(2);
+
+    const [virtualKey] = [...mininodeA.scm.keys()].filter(key => {
+      return key !== AddressZero;
+    });
+
+    const [appInstance] = [
+      ...mininodeA.scm.get(virtualKey)!.appInstances.values()
+    ];
+
+    expect(appInstance.isVirtualApp);
+
+    await mininodeA.ie.runUpdateProtocol(mininodeA.scm, {
+      initiatingXpub: mininodeA.xpub,
+      respondingXpub: mininodeC.xpub,
+      multisigAddress: virtualKey,
+      appIdentityHash: appInstance.identityHash,
+      newState: {
+        player1: AddressZero,
+        player2: AddressZero,
+        counter: 1
+      }
+    });
+
+    await mininodeA.ie.runTakeActionProtocol(mininodeA.scm, {
+      initiatingXpub: mininodeA.xpub,
+      respondingXpub: mininodeC.xpub,
+      multisigAddress: virtualKey,
+      appIdentityHash: appInstance.identityHash,
+      action: {
+        increment: 1
+      }
+    });
+
+    await mininodeA.ie.runUninstallVirtualAppProtocol(mininodeA.scm, {
+      initiatingXpub: mininodeA.xpub,
+      intermediaryXpub: mininodeB.xpub,
+      respondingXpub: mininodeC.xpub,
+      targetAppIdentityHash: appInstance.identityHash,
+      targetAppState: {
+        player1: AddressZero,
+        player2: AddressZero,
+        counter: 1
+      }
     });
   });
 });
