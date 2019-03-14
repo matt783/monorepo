@@ -1,5 +1,6 @@
 import AppRegistry from "@counterfactual/contracts/build/AppRegistry.json";
 import ETHBucket from "@counterfactual/contracts/build/ETHBucket.json";
+import ETHVirtualAppAgreement from "@counterfactual/contracts/build/ETHVirtualAppAgreement.json";
 import MultiSend from "@counterfactual/contracts/build/MultiSend.json";
 import NonceRegistry from "@counterfactual/contracts/build/NonceRegistry.json";
 import ResolveToPay5WeiApp from "@counterfactual/contracts/build/ResolveToPay5WeiApp.json";
@@ -36,7 +37,8 @@ beforeAll(async () => {
     { contractName: "ETHBucket", ...ETHBucket },
     { contractName: "StateChannelTransaction", ...StateChannelTransaction },
     { contractName: "NonceRegistry", ...NonceRegistry },
-    { contractName: "MultiSend", ...MultiSend }
+    { contractName: "MultiSend", ...MultiSend },
+    { contractName: "ETHVirtualAppAgreement", ...ETHVirtualAppAgreement }
     // todo: add more
   ];
 
@@ -127,10 +129,41 @@ describe("Three mininodes", async () => {
 
     mr.assertNoPending();
 
-    mininodeB.scm = await mininodeB.ie.runSetupProtocol({
-      initiatingXpub: mininodeB.xpub,
+    const AddressOne = "0x0000000000000000000000000000000000000001";
+
+    mininodeB.scm.set(
+      AddressOne,
+      (await mininodeB.ie.runSetupProtocol({
+        initiatingXpub: mininodeB.xpub,
+        respondingXpub: mininodeC.xpub,
+        multisigAddress: "0x0000000000000000000000000000000000000001"
+      })).get(AddressOne)!
+    );
+
+    mr.assertNoPending();
+
+    expect(mininodeA.scm.size).toBe(1);
+    expect(mininodeB.scm.size).toBe(2);
+    expect(mininodeC.scm.size).toBe(1);
+
+    await mininodeA.ie.runInstallVirtualAppProtocol(mininodeA.scm, {
+      initiatingXpub: mininodeA.xpub,
+      intermediaryXpub: mininodeB.xpub,
       respondingXpub: mininodeC.xpub,
-      multisigAddress: AddressZero
+      defaultTimeout: 100,
+      appInterface: {
+        addr: appDefinition.address,
+        stateEncoding:
+          "tuple(address player1, address player2, uint256 counter)",
+        actionEncoding: "tuple(uint256)"
+      },
+      initialState: {
+        player1: AddressZero,
+        player2: AddressZero,
+        counter: 0
+      },
+      initiatingBalanceDecrement: bigNumberify(0),
+      respondingBalanceDecrement: bigNumberify(0)
     });
   });
 });

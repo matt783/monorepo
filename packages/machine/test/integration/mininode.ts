@@ -51,7 +51,7 @@ export class MiniNode {
     this.ie.register(Opcode.WRITE_COMMITMENT, () => {});
   }
 
-  public dispatchMessage(message: any) {
-    this.ie.runProtocolWithMessage(message, this.scm);
+  public async dispatchMessage(message: any) {
+    this.scm = await this.ie.runProtocolWithMessage(message, this.scm);
   }
 }
