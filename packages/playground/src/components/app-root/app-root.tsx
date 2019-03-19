@@ -503,12 +503,15 @@ export class AppRoot {
     };
 
     provider.once(transactionHash, onMultisigMined);
+    console.log(`waiting for kovan transaction https://kovan.etherscan.io/tx/${transactionHash}`);
 
     setTimeout(() => {
       if (!onMultisigMinedHasBeenCalled) {
-        console.log("Tx event not emitted within 24s, polling every 5s now");
+        console.log("Tx event not emitted within 1s, polling every s now");
         const poll = setInterval(async () => {
+          console.log("polling...");
           if (await provider.getTransactionReceipt(transactionHash)) {
+            console.log("polling done");
             clearInterval(poll);
             await onMultisigMined();
           }
