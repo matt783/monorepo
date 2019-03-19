@@ -507,7 +507,7 @@ export class AppRoot {
 
     setTimeout(() => {
       if (!onMultisigMinedHasBeenCalled) {
-        console.log("Tx event not emitted within 1s, polling every s now");
+        console.log("Tx event not emitted within 24s, polling every 5s now");
         const poll = setInterval(async () => {
           console.log("polling...");
           if (await provider.getTransactionReceipt(transactionHash)) {
